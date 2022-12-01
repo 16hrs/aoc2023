@@ -19,13 +19,13 @@ public class Bench
     }
 
     [Benchmark(Description = "Part 1")]
-    public ValueTask<string> PartOne()
+    public string PartOne()
     {
         return _challenge.SolvePartOne();
     }
 
     [Benchmark(Description = "Part 2")]
-    public ValueTask<string> PartTwo()
+    public string PartTwo()
     {
         return _challenge.SolvePartTwo();
     }

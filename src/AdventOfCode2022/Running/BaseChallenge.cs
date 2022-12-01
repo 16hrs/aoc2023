@@ -10,7 +10,7 @@ public abstract class BaseChallenge
         return dele(Path.Combine(InputDir, challengeIdentifier + InputFileType));
     }
 
-    public abstract ValueTask<string> SolvePartOne();
+    public abstract string SolvePartOne();
 
-    public abstract ValueTask<string> SolvePartTwo();
+    public abstract string SolvePartTwo();
 }
