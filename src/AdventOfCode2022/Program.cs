@@ -26,10 +26,20 @@ internal class Program
                     break;
                 }
 
-                // Run the one provided in the arg
-                DayInput = challengeType;
-                BenchmarkRunner.Run<Bench>();
-                
+                if (args.Contains("--bench"))
+                {
+                    // Run the one provided in the arg
+                    DayInput = challengeType;
+                    BenchmarkRunner.Run<Bench>();
+                }
+                else
+                {
+                    var challenge = (BaseChallenge)Activator.CreateInstance(challengeType)!;
+
+                    Console.WriteLine(challenge.SolvePartOne());
+                    Console.WriteLine(challenge.SolvePartTwo());
+                }
+
                 break;
             default:
                 Console.WriteLine($"'{args.Length}' is too many arguments");
