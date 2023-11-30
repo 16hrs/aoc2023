@@ -8,10 +8,12 @@ namespace AdventOfCode2022.Running;
 [Orderer(SummaryOrderPolicy.Method, MethodOrderPolicy.Alphabetical)]
 public class BulkBench
 {
-    [ParamsSource(nameof(Challenges))]
-    public Type Challenge { get; set; }
+    private BaseChallenge _challenge = null!;
 
-    private BaseChallenge _challenge;
+    [ParamsSource(nameof(Challenges))]
+    // ReSharper disable once MemberCanBePrivate.Global
+    // ReSharper disable once AutoPropertyCanBeMadeGetOnly.Global
+    public static Type Challenge { get; set; } = null!;
 
     [GlobalSetup]
     public void Setup()
@@ -20,16 +22,14 @@ public class BulkBench
     }
 
     [Benchmark(Description = "Part 1")]
-    public string PartOne()
-    {
-        return _challenge.SolvePartOne();
-    }
+    public string PartOne() => _challenge.SolvePartOne();
 
     [Benchmark(Description = "Part 2")]
-    public string PartTwo()
-    {
-        return _challenge.SolvePartTwo();
-    }
+    public string PartTwo() => _challenge.SolvePartTwo();
 
-    public IEnumerable<Type> Challenges() => Assembly.GetExecutingAssembly().GetTypes().Where(t => t.IsSubclassOf(typeof(BaseChallenge)));
+    public static IEnumerable<Type> Challenges() =>
+        Assembly
+            .GetExecutingAssembly()
+            .GetTypes()
+            .Where(predicate: t => t.IsSubclassOf(typeof(BaseChallenge)));
 }

@@ -3,30 +3,22 @@ using BenchmarkDotNet.Order;
 
 namespace AdventOfCode2022.Running;
 
-
 [MemoryDiagnoser(false)]
 [Orderer(SummaryOrderPolicy.Method, MethodOrderPolicy.Alphabetical)]
 public class Bench
 {
-    public Type Challenge => Program.DayInput;
 
-    private BaseChallenge _challenge;
+    private BaseChallenge _challenge = null!;
+    private static Type Challenge => Program.DayInput;
 
-    [GlobalSetup]
-    public void Setup()
+    [GlobalSetup] public void Setup()
     {
         _challenge = (BaseChallenge)Activator.CreateInstance(Challenge)!;
     }
 
-    [Benchmark(Description = "Part 1")]
-    public string PartOne()
-    {
-        return _challenge.SolvePartOne();
-    }
+    [Benchmark(Description = "Part 1")] public string PartOne()
+        => _challenge.SolvePartOne();
 
-    [Benchmark(Description = "Part 2")]
-    public string PartTwo()
-    {
-        return _challenge.SolvePartTwo();
-    }
+    [Benchmark(Description = "Part 2")] public string PartTwo()
+        => _challenge.SolvePartTwo();
 }

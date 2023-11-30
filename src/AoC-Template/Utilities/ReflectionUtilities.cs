@@ -7,7 +7,7 @@ public static class ReflectionUtilities
 {
     public static bool TryGetChallengeType(string challengeType, [NotNullWhen(true)] out Type? challenge)
     {
-        challenge = Assembly.GetExecutingAssembly().GetTypes().FirstOrDefault(t => t.Name == challengeType);
+        challenge = Assembly.GetExecutingAssembly().GetTypes().FirstOrDefault(predicate: t => t.Name == challengeType);
 
         return challenge is not null;
     }
