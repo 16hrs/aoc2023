@@ -5,11 +5,15 @@ namespace AdventOfCode2022.Running;
 
 [MemoryDiagnoser(false)]
 [Orderer(SummaryOrderPolicy.Method, MethodOrderPolicy.Alphabetical)]
-public class Bench
+public class DayBenchCSharp
 {
 
     private BaseChallenge _challenge = null!;
-    private static Type Challenge => Program.DayInput;
+    public static IEnumerable<Type> Challenges => Program.DayInputTypes;
+    
+    [ParamsSource(nameof(Challenges))]
+    // ReSharper disable once FieldCanBeMadeReadOnly.Local
+    public Type Challenge = null!;
 
     [GlobalSetup] public void Setup()
     {
