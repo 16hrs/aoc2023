@@ -1,4 +1,5 @@
-﻿using AdventOfCode2022.Running;
+﻿using System.CommandLine;
+using AdventOfCode2022.Running;
 using AdventOfCode2022.Utilities;
 using BenchmarkDotNet.Running;
 
@@ -6,44 +7,92 @@ namespace AdventOfCode2022;
 
 internal class Program
 {
-    // TODO: Find a better way to get this into the benchmark
-    static internal Type DayInput { get; set; }
+    public static IEnumerable<Type> DayInputs = null!;
 
     private static void Main(string[] args)
     {
-        switch (args.Length)
+        var langOption = new Option<string>("--lang", () => "c#", "The language to run in.");
+        var daysOption = new Option<IEnumerable<int>>("--days", "The days to run.") {AllowMultipleArgumentsPerToken = true};
+        var daysArgument = new Argument<IEnumerable<int>>("days", "The days to run.");
+        
+        var rootCommand = new RootCommand
         {
-            case 0:
-                // Run all
-                BenchmarkRunner.Run<BulkBench>();
+            langOption,
+            daysOption,
+        };
+        rootCommand.SetHandler(RunWithBench, langOption, daysOption);
+        
+        var runCommand = new Command("run", "Run without benchmark.");
+        runCommand.AddOption(langOption);
+        runCommand.AddOption(daysOption);
+        runCommand.SetHandler(RunWithoutBench, langOption, daysOption);
+        
+        var benchCommand = new Command("bench", "Run with benchmark.");
+        benchCommand.AddOption(langOption);
+        benchCommand.AddArgument(daysArgument);
+        benchCommand.SetHandler(RunWithBench, langOption, daysArgument);
+        
+        rootCommand.AddCommand(runCommand);
+        rootCommand.AddCommand(benchCommand);
+        
+        rootCommand.Invoke(args);
+    }
+
+    private static void RunWithBench(string lang, IEnumerable<int> days)
+    {
+        var daysList = days.ToList();
+        switch (lang, daysList.Count)
+        {
+            case ("c#", 0):
+                BenchmarkRunner.Run<BulkBenchCSharp>();
                 break;
+            case ("f#", 0):
+                BenchmarkRunner.Run<BulkBenchFSharp>();
+                break;
+            case ("c#",_):
+                DayInputs = GetTypes(daysList);
+                BenchmarkRunner.Run<DayBenchCSharp>();
+                break;
+            case ("f#",_):
+                throw new NotImplementedException("NYI");
+                break;
+        }
 
-            // TODO: This is broken? Fix this or something!
-            case 1:
-                if (!ReflectionUtilities.TryGetChallengeType(args[0], out var challengeType))
-                {
-                    Console.WriteLine($"'{args[0]}' not found in challenges folder. Exiting...");
-                    break;
-                }
+        return;
 
-                if (args.Contains("--bench"))
-                {
-                    // Run the one provided in the arg
-                    DayInput = challengeType;
-                    BenchmarkRunner.Run<Bench>();
-                }
+        IEnumerable<Type> GetTypes(IEnumerable<int> days)
+        {
+            foreach (var day in days)
+            {
+                var type = ReflectionUtilities.GetChallengeType(day);
+                if(type is null)
+                    Console.WriteLine($"No challenge found for day {day}.");
                 else
+                    yield return type;
+            }
+        }
+    }
+
+    private static void RunWithoutBench(string lang, IEnumerable<int> days)
+    {
+        switch(lang)
+        {
+            case "c#":
+                foreach (var day in days)
                 {
-                    var challenge = (BaseChallenge)Activator.CreateInstance(challengeType)!;
-
-                    Console.WriteLine(challenge.SolvePartOne());
-                    Console.WriteLine(challenge.SolvePartTwo());
+                    var type = ReflectionUtilities.GetChallengeType(day);
+                    if(type is null)
+                        Console.WriteLine($"No challenge found for day {day}.");
+                    else
+                    {
+                        var challenge = (BaseChallenge)Activator.CreateInstance(type)!;
+                        Console.WriteLine($"Day {day} part 1: {challenge.SolvePartOne()}");
+                        Console.WriteLine($"Day {day} part 2: {challenge.SolvePartTwo()}");
+                    }
                 }
-
                 break;
-
-            default:
-                Console.WriteLine($"'{args.Length}' is too many arguments");
+            case "f#":
+                throw new NotImplementedException("NYI");
                 break;
         }
     }
