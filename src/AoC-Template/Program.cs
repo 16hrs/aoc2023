@@ -14,7 +14,7 @@ internal class Program
     {
         var langOption = new Option<string>("--lang", () => "c#", "The language to run in.");
         var daysOption = new Option<IEnumerable<int>>("--days", "The days to run.") {AllowMultipleArgumentsPerToken = true};
-        var daysArgument = new Argument<IEnumerable<int>>("days", "The days to run.");
+        var daysOptionInRun = new Option<IEnumerable<int>>("--days", "The days to run.") {AllowMultipleArgumentsPerToken = true, IsRequired = true};
         
         var rootCommand = new RootCommand
         {
@@ -25,13 +25,13 @@ internal class Program
         
         var runCommand = new Command("run", "Run without benchmark.");
         runCommand.AddOption(langOption);
-        runCommand.AddOption(daysOption);
-        runCommand.SetHandler(RunWithoutBench, langOption, daysOption);
+        runCommand.AddOption(daysOptionInRun);
+        runCommand.SetHandler(RunWithoutBench, langOption, daysOptionInRun);
         
         var benchCommand = new Command("bench", "Run with benchmark.");
         benchCommand.AddOption(langOption);
-        benchCommand.AddArgument(daysArgument);
-        benchCommand.SetHandler(RunWithBench, langOption, daysArgument);
+        benchCommand.AddOption(daysOption);
+        benchCommand.SetHandler(RunWithBench, langOption, daysOption);
         
         rootCommand.AddCommand(runCommand);
         rootCommand.AddCommand(benchCommand);
