@@ -7,7 +7,8 @@ namespace AdventOfCode2022;
 
 internal class Program
 {
-    public static IEnumerable<Type> DayInputs = null!;
+    public static IEnumerable<Type> DayInputTypes = null!;
+    public static IEnumerable<BaseChallengeFSharp> DayInputFSharp = null!;
 
     private static void Main(string[] args)
     {
@@ -50,11 +51,12 @@ internal class Program
                 BenchmarkRunner.Run<BulkBenchFSharp>();
                 break;
             case ("c#",_):
-                DayInputs = GetTypes(daysList);
+                DayInputTypes = GetTypes(daysList);
                 BenchmarkRunner.Run<DayBenchCSharp>();
                 break;
             case ("f#",_):
-                throw new NotImplementedException("NYI");
+                DayInputFSharp = GetFSharpChallenges(daysList);
+                BenchmarkRunner.Run<DayBenchFSharp>();
                 break;
         }
 
@@ -69,6 +71,19 @@ internal class Program
                     Console.WriteLine($"No challenge found for day {day}.");
                 else
                     yield return type;
+            }
+        }
+
+        IEnumerable<BaseChallengeFSharp> GetFSharpChallenges(IEnumerable<int> days)
+        {
+            List<(BaseChallengeFSharp challenge, int)> challenges = BulkBenchFSharp.Challenges().Select(c => (c, int.Parse(c.DayIdentifier))).ToList();
+            foreach (var day in days)
+            {
+                var challenge = challenges.FirstOrDefault(c => c.Item2 == day).challenge;
+                if(challenge is null) 
+                    Console.WriteLine($"No challenge found for day {day}.");
+                else
+                    yield return challenge;
             }
         }
     }

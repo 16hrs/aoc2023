@@ -23,9 +23,9 @@ public partial class BaseChallengeFSharp
 
     private string GetInput() => File.ReadAllText(Path.Combine(InputDir, $"{DayIdentifier}{InputFileType}"));
 
-    private string DayIdentifier { get; init; }
-    private MethodInfo Part1 { get; init; }
-    private MethodInfo Part2 { get; init; }
+    public string DayIdentifier { get; }
+    private MethodInfo Part1 { get; }
+    private MethodInfo Part2 { get; }
 
     public string SolvePartOne() => Part1.Invoke(null, new object?[] { GetInput() }) as string ?? string.Empty;
     public string SolvePartTwo() => Part2.Invoke(null, new object?[] { GetInput() }) as string ?? string.Empty;
