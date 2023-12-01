@@ -93,22 +93,42 @@ internal class Program
         switch(lang)
         {
             case "c#":
-                foreach (var day in days)
-                {
-                    var type = ReflectionUtilities.GetChallengeType(day);
-                    if(type is null)
-                        Console.WriteLine($"No challenge found for day {day}.");
-                    else
-                    {
-                        var challenge = (BaseChallenge)Activator.CreateInstance(type)!;
-                        Console.WriteLine($"Day {day} part 1: {challenge.SolvePartOne()}");
-                        Console.WriteLine($"Day {day} part 2: {challenge.SolvePartTwo()}");
-                    }
-                }
+                RunCSharpWithoutBench(days);
                 break;
             case "f#":
-                throw new NotImplementedException("NYI");
+                RunFSharpWithoutBench(days);
                 break;
+        }
+    }
+
+    private static void RunFSharpWithoutBench(IEnumerable<int> days)
+    {
+        foreach (var day in days)
+        {
+            var challenge = BulkBenchFSharp.Challenges().FirstOrDefault(c => int.Parse(c.DayIdentifier) == day);
+            if (challenge is null)
+                Console.WriteLine($"No challenge found for day {day}.");
+            else
+            {
+                Console.WriteLine($"Day {day} part 1: {challenge.SolvePartOne()}");
+                Console.WriteLine($"Day {day} part 2: {challenge.SolvePartTwo()}");
+            }
+        }
+    }
+
+    private static void RunCSharpWithoutBench(IEnumerable<int> days)
+    {
+        foreach (var day in days)
+        {
+            var type = ReflectionUtilities.GetChallengeType(day);
+            if (type is null)
+                Console.WriteLine($"No challenge found for day {day}.");
+            else
+            {
+                var challenge = (BaseChallenge)Activator.CreateInstance(type)!;
+                Console.WriteLine($"Day {day} part 1: {challenge.SolvePartOne()}");
+                Console.WriteLine($"Day {day} part 2: {challenge.SolvePartTwo()}");
+            }
         }
     }
 }
