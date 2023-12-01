@@ -19,16 +19,20 @@ public class BulkBenchFSharp
 
     [Benchmark(Description = "Part 2")]
     public string PartTwo() => Challenge.SolvePartTwo();
+
     public static IEnumerable<BaseChallengeFSharp> Challenges()
     {
         return Assembly
-                   .GetAssembly(typeof(Day01))?
-                   .GetTypes()
-                   .Select(t => (t, t.GetMethods()))
-                   .Where(tup => tup.Item2.Any(m => m.Name == "part1") &&
-                                 tup.Item2.Any(m => m.Name == "part2"))
-                   .Select(tup => (tup.t, tup.Item2.Where(m => m.Name is "part1" or "part2")))
-                   .Select(tup => new BaseChallengeFSharp(tup.t, tup.Item2))
-               ?? Enumerable.Empty<BaseChallengeFSharp>();
+                .GetAssembly(typeof(Day01))
+                ?.GetTypes()
+                .Select(t => (t, t.GetMethods()))
+                .Where(
+                    tup =>
+                        tup.Item2.Any(m => m.Name == "part1")
+                        && tup.Item2.Any(m => m.Name == "part2")
+                )
+                .Select(tup => (tup.t, tup.Item2.Where(m => m.Name is "part1" or "part2")))
+                .Select(tup => new BaseChallengeFSharp(tup.t, tup.Item2))
+            ?? Enumerable.Empty<BaseChallengeFSharp>();
     }
 }
