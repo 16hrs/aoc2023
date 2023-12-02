@@ -15,17 +15,14 @@ public class BulkBench
     // ReSharper disable once AutoPropertyCanBeMadeGetOnly.Global
     public static Type Challenge { get; set; } = null!;
 
-    [GlobalSetup]
-    public void Setup()
+    [GlobalSetup] public void Setup()
     {
         _challenge = (BaseChallenge)Activator.CreateInstance(Challenge)!;
     }
 
-    [Benchmark(Description = "Part 1")]
-    public string PartOne() => _challenge.SolvePartOne();
+    [Benchmark(Description = "Part 1")] public string PartOne() => _challenge.SolvePartOne();
 
-    [Benchmark(Description = "Part 2")]
-    public string PartTwo() => _challenge.SolvePartTwo();
+    [Benchmark(Description = "Part 2")] public string PartTwo() => _challenge.SolvePartTwo();
 
     public static IEnumerable<Type> Challenges() =>
         Assembly
